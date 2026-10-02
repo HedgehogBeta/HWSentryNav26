@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(small_glim)
 
-set(CMAKE_C_COMPILER "gcc-13")
-set(CMAKE_CXX_COMPILER "g++-13")
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -26,6 +24,9 @@ target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
 
 find_package(GTSAM 4.3 REQUIRED)
 target_link_libraries(${PROJECT_NAME} gtsam)
+
+find_package(fmt REQUIRED)
+target_link_libraries(${PROJECT_NAME} fmt::fmt)
 
 find_package(gtsam_points 1.2.0 REQUIRED)
 target_link_libraries(${PROJECT_NAME} gtsam_points::gtsam_points)

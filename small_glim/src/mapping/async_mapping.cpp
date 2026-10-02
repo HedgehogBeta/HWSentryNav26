@@ -5,7 +5,7 @@
 #include <cmath>
 #include <ctime>
 #include <filesystem>
-#include <format>
+#include <fmt/format.h>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -236,7 +236,7 @@ AsyncMapping::AsyncMapping(const Config::Ptr& config):
     if (params_.save_raw_mapping_frames) {
         poses_ofs_.open(fs::path(output_dir_) / "poses.txt", std::ios::out);
         if (!poses_ofs_) {
-            throw std::runtime_error(std::format("failed to open poses file in {}", output_dir_));
+            throw std::runtime_error(fmt::format("failed to open poses file in {}", output_dir_));
         }
     }
 
@@ -430,12 +430,12 @@ void AsyncMapping::ensure_output_dir() {
     std::error_code ec;
     fs::create_directories(out_dir, ec);
     if (ec) {
-        throw std::runtime_error(std::format("failed to create mapping output dir {} ({})", output_dir_, ec.message()));
+        throw std::runtime_error(fmt::format("failed to create mapping output dir {} ({})", output_dir_, ec.message()));
     }
 }
 
 void AsyncMapping::save_keyframe_raw_cloud(const pcl::PointCloud<pcl::PointXYZ>& cloud_imu) const {
-    const fs::path filepath = fs::path(output_dir_) / std::format("frame_{}.pcd", keyframe_count_);
+    const fs::path filepath = fs::path(output_dir_) / fmt::format("frame_{}.pcd", keyframe_count_);
     if (pcl::io::savePCDFileBinary(filepath.string(), cloud_imu) != 0) {
         logger::warn("mapping", "failed to save {}", filepath.string());
     }

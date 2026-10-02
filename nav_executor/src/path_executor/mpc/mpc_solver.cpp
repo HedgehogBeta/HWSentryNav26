@@ -419,7 +419,7 @@ StateVec MPCSolver::make_initial_state(
     return x0;
 }
 
-std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow(
+Expected<MPCSolver::FollowSolveResult> MPCSolver::solve_follow(
     const MincoTrajectory& global_trajectory,
     const PathSpeedProfile& speed_profile,
     const Eigen::Vector3d& chassis_pose_map,
@@ -473,7 +473,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
     if (!measured_x0.allFinite()) {
         follow_nominal_longitudinal_state_.reset();
         follow_warm_ = false;
-        return std::unexpected("Follow MPC received a non-finite initial state");
+        return unexpected("Follow MPC received a non-finite initial state");
     }
 
     const auto& feedback = params_.follow.ancillary_feedback;
@@ -513,7 +513,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
     if (!solver_result.feasible) {
         follow_nominal_longitudinal_state_.reset();
         follow_warm_ = false;
-        return std::unexpected(
+        return unexpected(
             "Follow MPC hard command bounds are infeasible from the current command"
         );
     }
@@ -523,7 +523,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
     if (nominal_rollout.valid_steps != fddp::Solver<FollowProblem>::N) {
         follow_nominal_longitudinal_state_.reset();
         follow_warm_ = false;
-        return std::unexpected("Follow MPC produced a non-finite nominal rollout");
+        return unexpected("Follow MPC produced a non-finite nominal rollout");
     }
     ControlVec applied_control = follow_solver_.us[0];
     bool first_command_tube_feasible = true;
@@ -546,7 +546,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
         || !applied_control.allFinite()) {
         follow_nominal_longitudinal_state_.reset();
         follow_warm_ = false;
-        return std::unexpected("Follow MPC produced a non-finite applied rollout");
+        return unexpected("Follow MPC produced a non-finite applied rollout");
     }
     MPCDiagnostics diagnostics = initial_diagnostics(MPCSolverMode::FOLLOW, measured_x0);
     diagnostics.solve_succeeded = true;
@@ -606,7 +606,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
 
             auto stop_result = solve_stop(chassis_pose_map, chassis_state, cost_map);
             if (!stop_result) {
-                return std::unexpected(stop_result.error());
+                return unexpected(stop_result.error());
             }
 
             const bool replan_requested = follow_lethal_consecutive_count_
@@ -644,7 +644,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
     if (!cmd.allFinite()) {
         follow_nominal_longitudinal_state_.reset();
         follow_warm_ = false;
-        return std::unexpected("Follow MPC produced a non-finite command");
+        return unexpected("Follow MPC produced a non-finite command");
     }
     last_cmd_rate_.x() = applied_control(iu::V_CMD_RATE);
     last_cmd_rate_.y() = applied_control(iu::W_CMD_RATE);
@@ -657,7 +657,7 @@ std::expected<MPCSolver::FollowSolveResult, std::string> MPCSolver::solve_follow
     return out;
 }
 
-std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_stop(
+Expected<MPCSolver::SolveResult> MPCSolver::solve_stop(
     const Eigen::Vector3d& chassis_pose_map,
     const ChassisMotionState& chassis_state,
     const CostMap& cost_map
@@ -670,7 +670,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_stop(
     );
     if (!x0.allFinite()) {
         stop_warm_ = false;
-        return std::unexpected("Stop MPC received a non-finite initial state");
+        return unexpected("Stop MPC received a non-finite initial state");
     }
 
     StopProblem prob(params_, cost_map, schedule_rho);
@@ -685,7 +685,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_stop(
     stop_solver_.xs[0] = x0;
     const auto solver_result = stop_solver_.solve(prob, opts);
     if (!solver_result.feasible) {
-        return std::unexpected(
+        return unexpected(
             "Stop MPC hard command bounds are infeasible from the current command"
         );
     }
@@ -694,7 +694,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_stop(
     const Eigen::Vector2d cmd = command_after_control(x0, stop_solver_.us[0]);
     if (!cmd.allFinite()) {
         stop_warm_ = false;
-        return std::unexpected("Stop MPC produced a non-finite command");
+        return unexpected("Stop MPC produced a non-finite command");
     }
     last_cmd_rate_.x() = stop_solver_.us[0](iu::V_CMD_RATE);
     last_cmd_rate_.y() = stop_solver_.us[0](iu::W_CMD_RATE);
@@ -716,7 +716,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_stop(
     return SolveResult {.command = cmd, .diagnostics = std::move(diagnostics)};
 }
 
-std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_hold(
+Expected<MPCSolver::SolveResult> MPCSolver::solve_hold(
     const Eigen::Vector2d& goal_map,
     const Eigen::Vector3d& chassis_pose_map,
     const ChassisMotionState& chassis_state,
@@ -730,7 +730,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_hold(
     );
     if (!x0.allFinite()) {
         hold_warm_ = false;
-        return std::unexpected("Hold MPC received a non-finite initial state");
+        return unexpected("Hold MPC received a non-finite initial state");
     }
 
     HoldProblem prob(goal_map, params_, cost_map, schedule_rho);
@@ -745,7 +745,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_hold(
     hold_solver_.xs[0] = x0;
     const auto solver_result = hold_solver_.solve(prob, opts);
     if (!solver_result.feasible) {
-        return std::unexpected(
+        return unexpected(
             "Hold MPC hard command bounds are infeasible from the current command"
         );
     }
@@ -754,7 +754,7 @@ std::expected<MPCSolver::SolveResult, std::string> MPCSolver::solve_hold(
     const Eigen::Vector2d cmd = command_after_control(x0, hold_solver_.us[0]);
     if (!cmd.allFinite()) {
         hold_warm_ = false;
-        return std::unexpected("Hold MPC produced a non-finite command");
+        return unexpected("Hold MPC produced a non-finite command");
     }
     last_cmd_rate_.x() = hold_solver_.us[0](iu::V_CMD_RATE);
     last_cmd_rate_.y() = hold_solver_.us[0](iu::W_CMD_RATE);

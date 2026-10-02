@@ -11,6 +11,17 @@
 3. 使用`ros2 launch small_glim small_glim.launch.py`启动里程计节点。使用`ros2 bag play mid360_bag`播放录包。然后打开Foxglove之类的可视化工具应该就能看到里程计话题了。
 4. 每次建图会在`output_root`（默认`~/mapping`，可以在`params_mapping.yaml`中修改）下新建一个带时间戳的子目录`mapping_<时间戳>`，结果保存在其中。`mapping.pcd`是全局点云，`frame_*.pcd`是关键帧点云（需要`save_raw_mapping_frames`为`true`），`poses.txt`是关键帧位姿（完整 SE(3)，格式`se3(x,y,z,qx,qy,qz,qw)`）。
 
+在 Ubuntu 22.04 / ROS 2 Humble 的 `test-demo` 分支中，第 2 步的参数已经配置好。下载的 `mid360_bag` 是 Jazzy 格式的 MCAP 包，需要先转换 metadata，并仅播放里程计使用的两个标准消息话题（原包还含有 Humble 环境里未安装的 `livox_ros_driver2/CustomMsg`）：
+
+```bash
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+python3 scripts/prepare_humble_bag.py ~/rosbags/mid360_bag
+ros2 bag play ~/rosbags/mid360_bag --topics /livox/imu /livox/lidar/pointcloud
+```
+
+转换脚本会保留原始文件为`metadata.jazzy.yaml`。离线优化的`data_path`请传入生成的`mapping_<时间戳>`目录的绝对路径。
+
 ## `offline_mapping_optimizer` 离线建图优化演示
 
 1. 使用`ros2 launch offline_mapping_optimizer offline_mapping_optimizer.launch.py data_path:=mapping_*`启动离线建图优化节点。其中`mapping_*`是上一步生成的建图结果文件夹。

@@ -1,5 +1,5 @@
 #include <small_glim/common/raw_points.hpp>
-#include <format>
+#include <fmt/format.h>
 #include <stdexcept>
 
 namespace small_glim {
@@ -41,7 +41,7 @@ void validate_pointcloud_layout(const sensor_msgs::msg::PointCloud2& points_msg)
                 continue;
         }
         if (field.count == 0 || field.offset + datatype_size * field.count > points_msg.point_step) {
-            throw std::runtime_error(std::format("PointCloud2 field {} exceeds point_step", field.name));
+            throw std::runtime_error(fmt::format("PointCloud2 field {} exceeds point_step", field.name));
         }
     }
 }
@@ -151,7 +151,7 @@ RawPoints::RawPoints(
                     break;
                 }
                 default: {
-                    throw std::runtime_error(std::format("unsupported time type {}", time_type));
+                    throw std::runtime_error(fmt::format("unsupported time type {}", time_type));
                 }
             }
         }
@@ -183,7 +183,7 @@ RawPoints::RawPoints(
                     break;
                 }
                 default: {
-                    throw std::runtime_error(std::format("unsupported intensity type {}", intensity_type));
+                    throw std::runtime_error(fmt::format("unsupported intensity type {}", intensity_type));
                 }
             }
         }
@@ -191,7 +191,7 @@ RawPoints::RawPoints(
 
     if (color_offset != static_cast<size_t>(-1)) {
         if (color_type != PointField::UINT32) {
-            throw std::runtime_error(std::format("unsupported color type {}", color_type));
+            throw std::runtime_error(fmt::format("unsupported color type {}", color_type));
         } else {
             colors.resize(num_points);
             for (size_t i = 0; i < num_points; i++) {
@@ -219,7 +219,7 @@ RawPoints::RawPoints(
                     break;
                 }
                 default: {
-                    throw std::runtime_error(std::format("unsupported ring type {}", ring_type));
+                    throw std::runtime_error(fmt::format("unsupported ring type {}", ring_type));
                 }
             }
         }

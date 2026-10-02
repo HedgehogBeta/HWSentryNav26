@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(map_server)
 
-set(CMAKE_C_COMPILER "gcc-13")
-set(CMAKE_CXX_COMPILER "g++-13")
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -26,8 +24,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PCL_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PCL_DEFINITIONS})
 target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
 
-find_package(msgpack-cxx REQUIRED)
-target_link_libraries(${PROJECT_NAME} msgpack-cxx)
+find_package(msgpack-cxx QUIET)
+if(TARGET msgpack-cxx)
+  target_link_libraries(${PROJECT_NAME} msgpack-cxx)
+else()
+  find_package(msgpack REQUIRED)
+  target_link_libraries(${PROJECT_NAME} msgpackc-cxx msgpackc)
+endif()
 
 rclcpp_components_register_node(${PROJECT_NAME}
   PLUGIN map_server::MapServerNode

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <expected>
+#include <nav_executor/common/expected.hpp>
 #include <nav_executor/path_executor/mpc/mpc_types.hpp>
 #include <nav_executor/path_executor/mpc/lpv_observer.hpp>
 #include <nav_executor/common/trajectory/minco_trajectory.hpp>
@@ -57,7 +57,7 @@ public:
         return observer_.diagnostics();
     }
 
-    std::expected<FollowSolveResult, std::string> solve_follow(
+    Expected<FollowSolveResult> solve_follow(
         const MincoTrajectory& global_trajectory,
         const PathSpeedProfile& speed_profile,
         const Eigen::Vector3d& chassis_pose_map,
@@ -73,13 +73,13 @@ public:
         bool check_lethal_status
     );
 
-    std::expected<SolveResult, std::string> solve_stop(
+    Expected<SolveResult> solve_stop(
         const Eigen::Vector3d& chassis_pose_map,
         const ChassisMotionState& chassis_state,
         const CostMap& cost_map
     );
 
-    std::expected<SolveResult, std::string> solve_hold(
+    Expected<SolveResult> solve_hold(
         const Eigen::Vector2d& goal_map,
         const Eigen::Vector3d& chassis_pose_map,
         const ChassisMotionState& chassis_state,

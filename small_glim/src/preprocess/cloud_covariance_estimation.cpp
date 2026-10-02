@@ -1,6 +1,7 @@
 #include <small_glim/preprocess/cloud_covariance_estimation.hpp>
 #include <small_glim/common/logger.hpp>
 #include <gtsam_points/util/parallelism.hpp>
+#include <cstdlib>
 
 namespace small_glim {
 
@@ -190,7 +191,7 @@ Eigen::Matrix4d CloudCovarianceEstimation::regularize(
             return C_;
         }
     }
-    std::unreachable();
+    std::abort();
 }
 
 }

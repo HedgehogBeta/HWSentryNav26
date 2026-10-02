@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdlib>
 #include <utility>
 
 namespace nav_executor {
@@ -58,7 +59,7 @@ inline ChassisControlState classify_chassis_control_state(const uint8_t leg_mode
             return ChassisControlState::NORMAL;
     }
 
-    std::unreachable();
+    std::abort();
 }
 
 } // namespace nav_executor

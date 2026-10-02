@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <format>
+#include <fmt/format.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
@@ -12,7 +12,7 @@ namespace small_glim {
 
 template <typename T>
 std::string convert_to_string(const T& value) {
-    return std::format("{}", value);
+    return fmt::format("{}", value);
 }
 
 template <typename T2>
@@ -37,7 +37,7 @@ std::string convert_to_string(const Eigen::Matrix<double, D, 1>& value) {
         if (i) {
             sst << ",";
         }
-        sst << std::format("{:.6f}", value[i]);
+        sst << fmt::format("{:.6f}", value[i]);
     }
     sst << ")";
     return sst.str();
@@ -45,13 +45,13 @@ std::string convert_to_string(const Eigen::Matrix<double, D, 1>& value) {
 
 template <>
 inline std::string convert_to_string(const Eigen::Quaterniond& quat) {
-    return std::format("quat({:.6f},{:.6f},{:.6f},{:.6f})", quat.x(), quat.y(), quat.z(), quat.w());
+    return fmt::format("quat({:.6f},{:.6f},{:.6f},{:.6f})", quat.x(), quat.y(), quat.z(), quat.w());
 }
 
 template <>
 inline std::string convert_to_string(const Eigen::Isometry3d& pose) {
     const Eigen::Vector3d trans(pose.translation());
     const Eigen::Quaterniond quat(pose.linear());
-    return std::format("se3({:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f})", trans.x(), trans.y(), trans.z(), quat.x(), quat.y(), quat.z(), quat.w());
+    return fmt::format("se3({:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f},{:.6f})", trans.x(), trans.y(), trans.z(), quat.x(), quat.y(), quat.z(), quat.w());
 }
 }

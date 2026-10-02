@@ -113,3 +113,31 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ## 可选依赖
 
 `utils/py`下有一些Python脚本，可能需要以下Python库。推荐使用uv安装：`uv pip install numpy matplotlib scipy open3d pillow opencv-python msgpack pyyaml numba mcap mcap-ros2-support cadquery`。
+
+## Ubuntu 22.04 / ROS 2 Humble demo（`test-demo` 分支）
+
+这个分支使用本机的 GCC 11、C++20 和 ROS 2 Humble。先按上文安装 GTSAM 4.3a0、gtsam_points v1.2.0，再补齐 Humble 对应的依赖：
+
+```bash
+sudo apt install libeigen3-dev libopencv-dev libpcl-dev libasio-dev libboost-all-dev \
+  libmsgpack-dev libfmt-dev libmetis-dev libomp-dev libspdlog-dev \
+  ros-humble-cv-bridge ros-humble-pcl-ros ros-humble-asio-cmake-module \
+  ros-humble-rosbag2-storage-mcap
+sudo ldconfig
+```
+
+`HWSentryCommon26` 是构建所需的相邻仓库，无须另建工作空间。它的 TF 节点也需要 GCC 11 兼容修改。本分支提供了[补丁](./patches/HWSentryCommon26-humble.patch)：
+
+```bash
+cd /path/to/HWSentryNav26
+git clone https://github.com/Polyacetone/HWSentryCommon26.git ../HWSentryCommon26
+git -C ../HWSentryCommon26 apply ../HWSentryNav26/patches/HWSentryCommon26-humble.patch
+source /opt/ros/humble/setup.bash
+colcon build --base-paths . ../HWSentryCommon26 \
+  --packages-up-to map_server nav_executor tf_maintainer mid360_driver \
+  odom_localizer small_glim offline_mapping_optimizer \
+  --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+source install/setup.bash
+```
+
+每个运行 demo 的终端都要执行上面最后两条 `source` 命令。录包在 Humble 下的准备方法见 [DEMO 说明](./DEMO.md)。
