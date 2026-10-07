@@ -38,3 +38,5 @@ ros2 bag play ~/rosbags/mid360_bag --topics /livox/imu /livox/lidar/pointcloud
    - `python3 HWSentryNav26/utils/py/msg/nav_goal_relay.py`：简单的话题转发节点，把`/nav_goal`话题（`geometry_msgs/PointStamped`类型）转发到`/decision/nav_goal`（`interfaces/msg/NavGoal`类型，即`nav_executor`实际订阅的目标话题），方便在Foxglove里点击导航目标。
 3. 打开Foxglove之类的可视化工具，设置显示坐标系为`map`，查看`/map_server/debug/global_map_cloud`、`/nav_executor/debug/final_cost_map`、`/nav_executor/debug/minco_trajectory`、`/nav_executor/debug/mpc_path`话题和`odom`、`chassis_link`变换。然后在地图上点击目标发送`geometry_msgs/PointStamped`类型的`/nav_goal`话题，应该就能看到路径规划和路径跟随的效果了。
 4. 如果想看动态避障效果，可以在`wheel_leg_lqr_follow_sim.py`里修改`OBSTACLE_SPECS`列表，添加一些障碍物（里面已经写好几条示例，默认全部注释掉了，取消注释即可）。
+
+运行效果可以参考这份录屏：[media/nav_demo.mp4](./media/nav_demo.mp4)。画面是 RViz2 中的`nav_executor`导航演示（全局地图、代价地图、MINCO 轨迹和 MPC 路径），录制过程中先后发送了三个导航目标点，视频为 2 倍速播放。
