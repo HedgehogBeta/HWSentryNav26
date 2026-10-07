@@ -30,7 +30,7 @@ ros2 bag play ~/rosbags/mid360_bag --topics /livox/imu /livox/lidar/pointcloud
 ## `nav_executor` 导航演示
 
 1. 从[这里](https://drive.google.com/drive/folders/1FJgEmFS2wcuFFTUjiKikhG14Zo43saoj)下载`RMUC202605.msgpack`和`RMUC202608af.pcd`全局地图文件，放到`map_server/maps`文件夹下，并重新构建。
-2. 开非常多终端，分别启动：
+2. 可在仓库根目录运行 `bash scripts/start_nav_demo.sh --no-goal`，同时启动下列节点和 RViz2，再用 Publish Point 发送目标。也可以分别启动：
    - `ros2 launch map_server map_server.launch.py`：提供全局地图/局部地图。
    - `ros2 launch nav_executor nav_executor.launch.py`：进行路径规划/路径跟随。
    - `ros2 launch tf_maintainer tf_maintainer.launch.py`：TF树维护节点。

@@ -1,0 +1,7 @@
+# Python tools used by MID360_REPRODUCE.md on Ubuntu x86_64.
+# Keep NumPy 1.x for ROS 2 Humble extensions compiled against NumPy 1.x.
+numpy==1.26.4
+open3d-cpu==0.19.0
+pillow>=9
+msgpack>=1.0,<2
+PyYAML>=6.0,<7
